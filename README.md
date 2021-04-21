@@ -25,6 +25,21 @@ We now need a way to authenticate to this project, for our programs to access th
 
 At the end of this guide, you will have generated a JSON authentication key, copy this key into your µD3TN project, record its absolute path, and replace <google_authentication_key_path> in 'aap_receive_cv.py' with it.
 
-Lastly, we will need to give our project permissions to the Cloud Vision API, so once again go to the Google Cloud Console and enter 'Cloud Vision API' into the search bar, then click on the first result and click 'ENABLE'.
+Lastly, we will need to give our project permissions to the Cloud Vision API, so once again go to the Google Cloud Console and enter 'Cloud Vision API' into the search bar, then click on the first result and select 'ENABLE'.
 
 Everything is now set up to start using the programs.
+
+## Using the programs
+Once you have a set of nodes connected with each other, you may use the following commands to send and receive images and image labels from Google's Cloud Vision API.
+
+Sending an image
+
+`
+python3 aap_send_cv.py --socket <path_to_socket_file> --agentid source_cv "dtn://<eid_to_send_to>/sink_cv" "<path_to_image>"
+`
+
+Starting up receiver (`--send-reply` flag is optional if you wish for labels to be sent back to /sink_cv endpoint of image sender)
+
+`
+python3 aap_receive_cv.py --socket <path_to_socket_file> --agentid sink_cv --send-reply
+`
