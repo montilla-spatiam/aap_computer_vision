@@ -23,7 +23,7 @@ Once this is done, go to the Google Cloud Console and select or create a project
 
 We now need a way to authenticate to this project, for our programs to access the Cloud Vision API through it. For this, follow Google's easy [authentication guide](https://cloud.google.com/docs/authentication/getting-started). 
 
-At the end of this guide, you will have generated a JSON authentication key, copy this key into your µD3TN project, record its absolute path, and replace <google_authentication_key_path> in 'aap_receive_cv.py' with it.
+At the end of this guide, you will have generated a JSON authentication key, copy this key into your µD3TN project, record its absolute path, and replace `<google_authentication_key_path>` in 'aap_receive_cv.py' with it.
 
 Lastly, we will need to give our project permissions to the Cloud Vision API, so once again go to the Google Cloud Console and enter 'Cloud Vision API' into the search bar, then click on the first result and select 'ENABLE'.
 
