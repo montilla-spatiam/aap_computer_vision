@@ -12,9 +12,9 @@ You may place aap_receive_cv.py and aap_send_cv.py in tools/aap/ (directories in
 
 Install grpcio and google-cloud-vision
 
-`
-pip3 install grpcio google-cloud-vision
-`
+````
+$ pip3 install grpcio google-cloud-vision
+````
 
 ## Setting up our Google Cloud Project
 In order to access Google's Cloud Vision API, you will need to create a Google Cloud Platform account from the [Google Cloud Console](https://console.cloud.google.com/).
@@ -34,12 +34,12 @@ Once you have a set of nodes connected with each other, you may use the followin
 
 Sending an image
 
-`
-python3 aap_send_cv.py --socket <path_to_socket_file> --agentid source_cv "dtn://<eid_to_send_to>/sink_cv" "<path_to_image>"
-`
+````
+$ python3 aap_send_cv.py --socket <path_to_socket_file> --agentid source_cv "dtn://<eid_to_send_to>/sink_cv" "<path_to_image>"
+````
 
 Starting up receiver (`--send-reply` flag is optional if you wish for labels to be sent back to /sink_cv endpoint of image sender)
 
-`
-python3 aap_receive_cv.py --socket <path_to_socket_file> --agentid sink_cv --send-reply
-`
+````
+$ python3 aap_receive_cv.py --socket <path_to_socket_file> --agentid sink_cv --send-reply
+````
