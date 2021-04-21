@@ -16,7 +16,7 @@ def run_aap_recv(aap_client, max_count=None, verify_pl=None, send_reply=False):
 
     print("Waiting for bundles...")
 
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/ubuntu/Spatiam/ud3tn/spatiam-dtn-cloud-vision.json'
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '<google_authentication_key_path>'
 
     client = vision.ImageAnnotatorClient()
 
