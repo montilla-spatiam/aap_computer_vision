@@ -4,6 +4,7 @@
 import argparse
 import logging
 import sys
+
 import base64
 import os
 
@@ -16,8 +17,8 @@ def run_aap_recv(aap_client, max_count=None, verify_pl=None, send_reply=False):
 
     print("Waiting for bundles...")
 
+    # Set up client for Google Cloud Vision API
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '<google_authentication_key_path>'
-
     client = vision.ImageAnnotatorClient()
 
     counter = 0
@@ -26,22 +27,28 @@ def run_aap_recv(aap_client, max_count=None, verify_pl=None, send_reply=False):
         if not msg:
             return
 
-        b64bytes = msg.payload.decode('utf-8')
+        msg_payload = msg.payload.decode('utf-8')
 
-        msg_data = b64bytes.split('\n', 1)[0].split('#')
-        filename = msg_data[0]
-        msg_content = msg_data[1]
+        
+        # Message payload has one of two formats
+        #   1) <img_filename>#image\n<base64_encoded_image>
+        #   2) <img_filename>#labels\n<image_labels>
+        
+        msg_data = msg_payload.split('\n', 1)[0].split('#')
+        img_filename = msg_data[0]
+        msg_type = msg_data[1]
 
-        b64bytes = b64bytes.split('\n', 1)[1]
+        msg_content = msg_payload.split('\n', 1)[1]
 
-        if msg_content == 'image':
+        if msg_type == 'image':
 
-            img_bytes = base64.b64decode(b64bytes)
+            img_bytes = base64.b64decode(msg_content)
 
             print("\nReceived '{}' from '{}'".format(
-                filename, msg.eid,
+                img_filename, msg.eid,
             ))
 
+            # Load and send image to Google Cloud Vision API to get labels back
             image = vision.Image(content=img_bytes)
             response = client.label_detection(image=image)
             labels = response.label_annotations
@@ -50,13 +57,15 @@ def run_aap_recv(aap_client, max_count=None, verify_pl=None, send_reply=False):
             label_descriptions = []
             for label in labels:
                 label_descriptions.append(str(label.description))
+
             label_desc_str = ', '.join(label_descriptions,)
             print("Identified '{}' Labels in the image: {}".format(x, label_desc_str))
 
             if send_reply:
 
-                reply_msg = "{}#labels\n{}".format(filename, label_desc_str)
+                reply_msg = "{}#labels\n{}".format(img_filename, label_desc_str)
 
+                # Send labels to /sink_cv endpoint of original sender
                 scheme = msg.eid.split('//')[0]
                 eid_name = msg.eid.split('//')[1].split('/', 1)[0]
                 sink_eid = scheme + '//' + eid_name + '/sink_cv'
@@ -70,7 +79,7 @@ def run_aap_recv(aap_client, max_count=None, verify_pl=None, send_reply=False):
 
         else:
             print("\nReceived labels from '{}' of '{}':\n\t{}".format(
-                msg.eid, filename, b64bytes,))
+                msg.eid, img_filename, msg_content,))
 
         counter += 1
         if max_count and counter >= max_count:

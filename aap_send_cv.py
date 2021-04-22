@@ -23,18 +23,10 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "image_path",
-        nargs="?",
-        default=None,
-        help="the path to the image to be labeled, (default: read from STDIN)",
+        help="the path to the image to be labeled",
     )
 
     args = parser.parse_args()
-
-    if not args.image_path:
-        with sys.stdin as f:
-            args.image_path = f.read()
-    else:
-        args.image_path = args.image_path
 
     if args.verbosity:
         logging.basicConfig(level=logging_level(args.verbosity))
@@ -43,8 +35,15 @@ if __name__ == "__main__":
         addr = (args.tcp[0], int(args.tcp[1]))
 
         if os.path.exists(args.image_path):
+            
             with open(args.image_path, 'rb') as file:
-                raw_image = file.read()
+                bytes_img = file.read()
+                encoded_img = base64.b64encode(bytes_img)
+                filename = args.image_path.split('/')[-1]
+
+                #   1st line of sent message = '<image_filename>#image'
+                #   Succeeding lines = base64 encoded image
+                img_str = filename + '#image\n' + encoded_img.decode('utf-8')
 
             with AAPTCPClient(address=addr) as aap_client:
                 aap_client.register(args.agentid)
@@ -55,12 +54,15 @@ if __name__ == "__main__":
 
     else:
         if os.path.exists(args.image_path):
+            
             with open(args.image_path, 'rb') as file:
 
+                bytes_img = file.read()
+                encoded_img = base64.b64encode(bytes_img)
                 filename = args.image_path.split('/')[-1]
 
-                raw_image = file.read()
-                encoded_img = base64.b64encode(raw_image)
+                #   1st line of sent message = '<image_filename>#image'
+                #   Succeeding lines = base64 encoded image
                 img_str = filename + '#image\n' + encoded_img.decode('utf-8')
 
             with AAPUnixClient(address=args.socket) as aap_client:
