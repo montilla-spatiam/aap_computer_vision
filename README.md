@@ -8,7 +8,7 @@ This repo assumes that you have a running µD3TN environment in a POSIX-complian
 Additionally, µD3TN's `python-uD3TN-utils` must be installed in your environment. Follow [these instructions](https://gitlab.com/d3tn/ud3tn/-/tree/master/python-ud3tn-utils) for the installation steps.
 
 ## Project Set up
-You may place `aap_receive_cv.py` and `aap_send_cv.py` in the tools/aap/ directory (inside the µD3TN code base).
+You may place `aap_receive_cv.py` and `aap_send_cv.py` in the `tools/aap/` directory (inside the µD3TN code base).
 
 Install grpcio and google-cloud-vision
 
@@ -30,8 +30,8 @@ Lastly, we will need to give our project permissions to the Cloud Vision API, so
 ## Using the programs
 Once you have a set of nodes connected with each other, you may use the following commands to send and receive images and image labels from Google's Cloud Vision API.
 
-### Receiving images an labels
-`aap_receive_cv.py` sets up the receiver for labels and images at the `/sink_cv` endpoint.
+### Receiving images and labels
+`aap_receive_cv.py` sets up the receiver at the `/sink_cv` endpoint.
 
 The `--send-reply` flag is optional if you wish for labels to be sent back to the /sink_cv endpoint of the original image sender.
 
