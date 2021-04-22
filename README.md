@@ -1,7 +1,7 @@
 # Google Cloud Vision over µD3TN
 
 ## Introduction
-In this project Spatiam Coporation builds from the basic python programs in [µD3TN](https://gitlab.com/d3tn/ud3tn), to bring access to Google's Cloud Vision API as a DTN (Delay and Disruption Tolerant) application. The project is also based from Dr. Lara Suzuki's project, [Using Google Cloud Vision API over DTN](https://github.com/lasuzuki/dtn-gcp-vision-ai)
+In this project Spatiam Coporation builds from the basic python programs in [µD3TN](https://gitlab.com/d3tn/ud3tn), to bring access to Google's Cloud Vision API as a DTN (Delay and Disruption Tolerant Network) application. The project is also based from Dr. Lara Suzuki's project, [Using Google Cloud Vision API over DTN](https://github.com/lasuzuki/dtn-gcp-vision-ai)
 
 ## Prerequisites
 This repo assumes that you have a running µD3TN environment in a POSIX-compliant OS, and are familiar with the basic set up of µD3TN nodes. This information can be found in the [µD3TN repo](https://gitlab.com/d3tn/ud3tn).
