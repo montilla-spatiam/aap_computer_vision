@@ -5,10 +5,10 @@ In this project Spatiam Coporation builds from the basic python programs in [µD
 
 ## Prerequisites
 This repo assumes that you have a running µD3TN environment in a POSIX-compliant OS, and are familiar with the basic set up of µD3TN nodes. This information can be found in the [µD3TN repo](https://gitlab.com/d3tn/ud3tn).
-Additionally, µD3TN's python-uD3TN-utils must be installed in your environment. Follow [these instructions](https://gitlab.com/d3tn/ud3tn/-/tree/master/python-ud3tn-utils) for the installation steps.
+Additionally, µD3TN's `python-uD3TN-utils` must be installed in your environment. Follow [these instructions](https://gitlab.com/d3tn/ud3tn/-/tree/master/python-ud3tn-utils) for the installation steps.
 
 ## Project Set up
-You may place aap_receive_cv.py and aap_send_cv.py in the tools/aap/ directory (inside the µD3TN code base).
+You may place `aap_receive_cv.py` and `aap_send_cv.py` in the tools/aap/ directory (inside the µD3TN code base).
 
 Install grpcio and google-cloud-vision
 
