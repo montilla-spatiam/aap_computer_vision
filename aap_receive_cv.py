@@ -13,7 +13,7 @@ from ud3tn_utils.aap import AAPUnixClient, AAPTCPClient
 from helpers import add_common_parser_arguments, logging_level
 
 
-def run_aap_recv(aap_client, max_count=None, verify_pl=None, send_reply=False):
+def run_aap_recv(aap_client, max_count=None):
 
     print("Waiting for bundles...")
 
@@ -60,17 +60,6 @@ def run_aap_recv(aap_client, max_count=None, verify_pl=None, send_reply=False):
 
         aap_client.send_str(msg.eid, label_desc_str)
 
-def str2bool(v):
-    if isinstance(v, bool):
-        return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="register an agent with uD3TN and wait for bundles",
@@ -84,19 +73,6 @@ if __name__ == "__main__":
         default=None,
         help="amount of bundles to be received before terminating",
     )
-    parser.add_argument(
-        "--verify-pl",
-        default=None,
-        help="verify that the payload is equal to the provided string",
-    )
-    parser.add_argument(
-        "--send-reply",
-        type=str2bool,
-        nargs='?',
-        const=True,
-        default=False,
-        help="Reply to the sender with image labels"
-    )
 
     args = parser.parse_args()
 
@@ -107,10 +83,8 @@ if __name__ == "__main__":
         addr = (args.tcp[0], int(args.tcp[1]))
         with AAPTCPClient(address=addr) as aap_client:
             aap_client.register(args.agentid)
-            run_aap_recv(aap_client, args.count,
-                         args.verify_pl, args.send_reply)
+            run_aap_recv(aap_client, args.count)
     else:
         with AAPUnixClient(address=args.socket) as aap_client:
             aap_client.register(args.agentid)
-            run_aap_recv(aap_client, args.count,
-                         args.verify_pl, args.send_reply)
+            run_aap_recv(aap_client, args.count)
