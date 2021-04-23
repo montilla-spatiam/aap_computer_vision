@@ -34,58 +34,31 @@ def run_aap_recv(aap_client, max_count=None, verify_pl=None, send_reply=False):
         #   1) <img_filename>#image\n<base64_encoded_image>
         #   2) <img_filename>#labels\n<image_labels>
         
-        msg_data = msg_payload.split('\n', 1)[0].split('#')
-        img_filename = msg_data[0]
-        msg_type = msg_data[1]
-
+        img_filename = msg_payload.split('\n', 1)[0]
         msg_content = msg_payload.split('\n', 1)[1]
+    
+        img_bytes = base64.b64decode(msg_content)
 
-        if msg_type == 'image':
+        print("\nReceived '{}' from '{}'".format(
+            img_filename, msg.eid,
+        ))
 
-            img_bytes = base64.b64decode(msg_content)
+        # Load and send image to Google Cloud Vision API to get labels back
+        image = vision.Image(content=img_bytes)
+        response = client.label_detection(image=image)
+        labels = response.label_annotations
+        x = len(labels)
 
-            print("\nReceived '{}' from '{}'".format(
-                img_filename, msg.eid,
-            ))
+        label_descriptions = []
+        for label in labels:
+            label_descriptions.append(str(label.description))
 
-            # Load and send image to Google Cloud Vision API to get labels back
-            image = vision.Image(content=img_bytes)
-            response = client.label_detection(image=image)
-            labels = response.label_annotations
-            x = len(labels)
+        label_desc_str = ', '.join(label_descriptions,)
+        print("Identified '{}' Labels in the image: {}".format(x, label_desc_str))
 
-            label_descriptions = []
-            for label in labels:
-                label_descriptions.append(str(label.description))
+        print("Forwarding labels to '{}', see logs for more details".format(msg.eid))
 
-            label_desc_str = ', '.join(label_descriptions,)
-            print("Identified '{}' Labels in the image: {}".format(x, label_desc_str))
-
-            if send_reply:
-
-                reply_msg = "{}#labels\n{}".format(img_filename, label_desc_str)
-
-                # Send labels to /sink_cv endpoint of original sender
-                scheme = msg.eid.split('//')[0]
-                eid_name = msg.eid.split('//')[1].split('/', 1)[0]
-                sink_eid = scheme + '//' + eid_name + '/sink_cv'
-
-                print(
-                    "Forwarding labels to '{}', see logs for more details".format(sink_eid))
-
-                with AAPUnixClient(address=args.socket) as aap_client2:
-                    aap_client2.register("source_label_cv")
-                    aap_client2.send_str(sink_eid, reply_msg)
-
-        else:
-            print("\nReceived labels from '{}' of '{}':\n\t{}".format(
-                msg.eid, img_filename, msg_content,))
-
-        counter += 1
-        if max_count and counter >= max_count:
-            print("\nExpected amount of bundles received, terminating.")
-            return
-
+        aap_client.send_str(msg.eid, label_desc_str)
 
 def str2bool(v):
     if isinstance(v, bool):

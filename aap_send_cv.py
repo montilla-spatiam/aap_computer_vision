@@ -41,13 +41,18 @@ if __name__ == "__main__":
                 encoded_img = base64.b64encode(bytes_img)
                 filename = args.image_path.split('/')[-1]
 
-                #   1st line of sent message = '<image_filename>#image'
+                #   1st line of sent message = '<image_filename>'
                 #   Succeeding lines = base64 encoded image
-                img_str = filename + '#image\n' + encoded_img.decode('utf-8')
+                img_str = filename + '\n' + encoded_img.decode('utf-8')
 
             with AAPTCPClient(address=addr) as aap_client:
                 aap_client.register(args.agentid)
                 aap_client.send_str(args.dest_eid, raw_image)
+                
+                print("Waiting for image labels...")
+                labels = aap_client.receive().payload.decode("utf-8")
+                
+                print("Received labels: {}".format(labels))
 
         else:
             print("ERROR: Provided path '{}' does not exist".format(args.image_path))
@@ -61,13 +66,19 @@ if __name__ == "__main__":
                 encoded_img = base64.b64encode(bytes_img)
                 filename = args.image_path.split('/')[-1]
 
-                #   1st line of sent message = '<image_filename>#image'
+                #   1st line of sent message = '<image_filename>'
                 #   Succeeding lines = base64 encoded image
-                img_str = filename + '#image\n' + encoded_img.decode('utf-8')
+                img_str = filename + '\n' + encoded_img.decode('utf-8')
 
             with AAPUnixClient(address=args.socket) as aap_client:
                 aap_client.register(args.agentid)
                 aap_client.send_str(args.dest_eid, img_str)
+
+                print("Waiting for image labels...")
+                labels = aap_client.receive().payload.decode("utf-8")
+                
+                print("Received labels: {}".format(labels))
+
 
         else:
             print("ERROR: Provided path '{}' does not exist".format(args.image_path))
