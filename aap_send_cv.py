@@ -13,6 +13,8 @@ from helpers import add_common_parser_arguments, logging_level
 if __name__ == "__main__":
     import sys
 
+    max_file_size = 170000
+
     parser = argparse.ArgumentParser(
         description="send a bundle via uD3TN's AAP interface",
     )
@@ -35,50 +37,61 @@ if __name__ == "__main__":
         addr = (args.tcp[0], int(args.tcp[1]))
 
         if os.path.exists(args.image_path):
-            
-            with open(args.image_path, 'rb') as file:
-                bytes_img = file.read()
-                encoded_img = base64.b64encode(bytes_img)
-                filename = args.image_path.split('/')[-1]
 
-                #   1st line of sent message = '<image_filename>'
-                #   Succeeding lines = base64 encoded image
-                img_str = filename + '\n' + encoded_img.decode('utf-8')
+            print(os.stat(args.image_path).st_size)
 
-            with AAPTCPClient(address=addr) as aap_client:
-                aap_client.register(args.agentid)
-                aap_client.send_str(args.dest_eid, raw_image)
+            if int(os.stat(args.image_path).st_size) > max_file_size:
+                print("File is too large, max file size is 170KB")
+
+            else:
+
+                with open(args.image_path, 'rb') as file:
+                    bytes_img = file.read()
+                    encoded_img = base64.b64encode(bytes_img)
+                    filename = args.image_path.split('/')[-1]
+
+                    #   1st line of sent message = '<image_filename>'
+                    #   Succeeding lines = base64 encoded image
+                    img_str = filename + '\n' + encoded_img.decode('utf-8')
+
+                with AAPTCPClient(address=addr) as aap_client:
+                    aap_client.register(args.agentid)
+                    aap_client.send_str(args.dest_eid, raw_image)
                 
-                print("Waiting for image labels...")
-                labels = aap_client.receive().payload.decode("utf-8")
+                    print("Waiting for image labels...")
+                    labels = aap_client.receive().payload.decode("utf-8")
                 
-                print("Received labels: {}".format(labels))
+                    print("Received labels: {}".format(labels))
 
         else:
             print("ERROR: Provided path '{}' does not exist".format(args.image_path))
 
     else:
         if os.path.exists(args.image_path):
-            
-            with open(args.image_path, 'rb') as file:
+           
+            if int(os.stat(args.image_path).st_size) > max_file_size:
+                print("File is too large, max file size is 170KB")
 
-                bytes_img = file.read()
-                encoded_img = base64.b64encode(bytes_img)
-                filename = args.image_path.split('/')[-1]
+            else:
 
-                #   1st line of sent message = '<image_filename>'
-                #   Succeeding lines = base64 encoded image
-                img_str = filename + '\n' + encoded_img.decode('utf-8')
+                with open(args.image_path, 'rb') as file:
 
-            with AAPUnixClient(address=args.socket) as aap_client:
-                aap_client.register(args.agentid)
-                aap_client.send_str(args.dest_eid, img_str)
+                    bytes_img = file.read()
+                    encoded_img = base64.b64encode(bytes_img)
+                    filename = args.image_path.split('/')[-1]
 
-                print("Waiting for image labels...")
-                labels = aap_client.receive().payload.decode("utf-8")
+                    #   1st line of sent message = '<image_filename>'
+                    #   Succeeding lines = base64 encoded image
+                    img_str = filename + '\n' + encoded_img.decode('utf-8')
+
+                with AAPUnixClient(address=args.socket) as aap_client:
+                    aap_client.register(args.agentid)
+                    aap_client.send_str(args.dest_eid, img_str)
+
+                    print("Waiting for image labels...")
+                    labels = aap_client.receive().payload.decode("utf-8")
                 
-                print("Received labels: {}".format(labels))
-
+                    print("Received labels: {}".format(labels))
 
         else:
             print("ERROR: Provided path '{}' does not exist".format(args.image_path))
