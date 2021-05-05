@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
                 with AAPTCPClient(address=addr) as aap_client:
                     aap_client.register(args.agentid)
-                    aap_client.send_str(args.dest_eid, raw_image)
+                    aap_client.send_str(args.dest_eid, img_str)
                 
                     print("Waiting for image labels...")
                     labels = aap_client.receive().payload.decode("utf-8")
