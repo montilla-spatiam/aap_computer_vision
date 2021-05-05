@@ -38,8 +38,6 @@ if __name__ == "__main__":
 
         if os.path.exists(args.image_path):
 
-            print(os.stat(args.image_path).st_size)
-
             if int(os.stat(args.image_path).st_size) > max_file_size:
                 print("File is too large, max file size is 170KB")
 
